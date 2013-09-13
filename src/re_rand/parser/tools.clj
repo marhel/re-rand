@@ -42,7 +42,7 @@
   (fn [src]
     (reduce
       (fn [[xs s] rule]
-        (if (seq s)
+        (if-not (nil? s)
           (if-let [[x s] (rule s)]
             [(conj xs x) s])))
       [[] src]

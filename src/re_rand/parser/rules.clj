@@ -99,7 +99,7 @@
 
 (def literal
   (attach
-    (match #"[^\\{}.+*()\[\]^$]")
+    (match #"[^\\{}.+*()\|\[\]^$]")
     constantly))
 
 (def any-char
@@ -137,13 +137,24 @@
       (let [chars (get-char-list char-groups (seq invert?))]
         #(rnd-choice chars)))))
 
-(declare pattern)
+(declare one-pattern)
+
+(def pattern
+  (attach
+    (series
+        (forward one-pattern)
+        (many (series
+          (match #"\|")
+          (forward one-pattern))))
+    (fn [fs]
+      (let [fs (filter fn? (flatten fs))]
+        #((rnd-choice fs))))))
 
 (def sub-pattern
   (attach
     (series
       (match #"\(")
-      (forward pattern)
+      pattern
       (match #"\)"))
     (fn [[_ f _]]
       #(let [s (f)]
@@ -187,7 +198,7 @@
     (fn [[f [_ n m]]]
       #(combine-many (rnd-seq f (parse-int n) (parse-int m))))))
 
-(def pattern
+(def one-pattern
   (attach
     (many
       (choice zero-or-more

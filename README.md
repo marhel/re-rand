@@ -13,3 +13,5 @@ Examples
     "i2"
     => (re-rand #"b(an)+a")
     ["bananananananana" "an"]
+    => (re-rand #"(North|South|Lake)(town|ville|land)")
+    ["Lakeville" "Lake" "ville"]
